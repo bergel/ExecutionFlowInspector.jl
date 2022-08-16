@@ -1,0 +1,4 @@
+name = "ExecutionFlowInspector"
+uuid = "4faadc14-5580-4100-b836-263b645d86e9"
+authors = ["Alexandre Bergel <alexandre.bergel@relational.ai>"]
+version = "0.1.0"
