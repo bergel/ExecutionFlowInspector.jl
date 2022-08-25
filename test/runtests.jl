@@ -60,3 +60,51 @@ end
     @test foo(100) == "A"
 end
  =#
+
+ # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+ # tracing_function should take function name and arguments as parameters
+macro mt(tracing_function, fun)
+    @capture(fun, function f_(args2__) body_ end) || error("must provide a function")
+    @capture(fun, function f_(args_) body_ end) || error("must provide a function")
+    return :( function $f($args)
+                $tracing_function(string($f), string($args2))
+                $body end )
+end
+global function_counters
+function reset_function_counters()
+    global function_counters = Dict{String,Int64}()
+end
+reset_function_counters()
+
+function increase_call(f_name::String)
+    if(!haskey(function_counters, f_name))
+        function_counters[f_name] = 0
+    end
+    function_counters[f_name] = function_counters[f_name] + 1
+end
+macro mtt(fun)
+    @capture(fun, function f_(args_) body_ end) || error("must provide a function")
+    return :(
+            @mt (fun_name, fun_args)-> increase_call(string(fun_name, "@", fun_args)) function $f($args)
+                $body
+            end )
+end
+
+
+@mtt function add5(x::Int64)
+    return x + 5
+end
+
+@mtt function add5(x::Float64)
+    return x + 5.0
+end
+
+
+@mtt function qwe(::Int64)
+    return 10
+end
+
+macroexpand(Main, :( @mtt function qwe(::Int64)
+    return 10
+end ))
