@@ -2,3 +2,6 @@ name = "ExecutionFlowInspector"
 uuid = "4faadc14-5580-4100-b836-263b645d86e9"
 authors = ["Alexandre Bergel <alexandre.bergel@relational.ai>"]
 version = "0.1.0"
+
+[deps]
+MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
